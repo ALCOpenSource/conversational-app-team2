@@ -4,6 +4,8 @@ const express = require("express"),
   bcrypt = require("bcrypt"),
   jwt = require("jsonwebtoken");
 
+const logger = require("../utils/log");
+
 router.use("/", (req, res, next) => {
   try {
     if (req.path == "/login" || req.path == "/register" || req.path == "/") {
@@ -18,6 +20,7 @@ router.use("/", (req, res, next) => {
             req.user = decoded;
             next();
           } else {
+            logger.log("error", err.message);
             return res.status(401).json({
               errorMessage: "User unauthorized!",
               status: false,
@@ -28,6 +31,7 @@ router.use("/", (req, res, next) => {
     }
   } catch (e) {
     console.log("[VERIFY_TOKEN]: " + Object.keys(e));
+    logger.log("error", e.message);
     return res.status(400).json({
       errorMessage: "Something went wrong!",
       status: false,
@@ -39,6 +43,7 @@ router.use("/", (req, res, next) => {
 router.get("/", (req, res, err) => {
   if (err) {
     console.log("[HEALTH_CHECK_API] error: " + Object.keys(err));
+    logger.log("error", err.message);
     return res.status(500).json({
       status: false,
       errorMessage: "Something went wrong!",
@@ -66,6 +71,7 @@ router.post("/register", (req, res) => {
           user.save((err, data) => {
             if (err) {
               console.log("[REGISTER_USER_ERROR] 1: " + Object.values(err)[3]);
+              logger.log("error", err.message);
               return res.status(400).json({
                 errorMessage: err,
                 status: false,
@@ -94,6 +100,7 @@ router.post("/register", (req, res) => {
     }
   } catch (e) {
     console.log("[REGISTER_USER_ERROR] 3: " + Object.keys(e));
+    logger.log("error", e.message);
     return res.status(400).json({
       errorMessage: "Something went wrong!",
       status: false,
@@ -109,7 +116,7 @@ router.post("/login", (req, res) => {
       User.find({ username: req.body.username }, (err, data) => {
         console.log("[username]: " + req.body.username);
         if (data) {
-          console.log("[DATA]: " + Object.values(data));
+          console.log("[DATA]: " + data);
           if (bcrypt.compareSync(req.body.password, data[0].password)) {
             checkUserAndGenerateToken(data[0], req, res);
           } else {
@@ -136,6 +143,7 @@ router.post("/login", (req, res) => {
     }
   } catch (e) {
     console.log("something went wrong. See error: " + Object.keys(e));
+    logger.log("error", e.message);
     return res.status(400).json({
       errorMessage: "Something went wrong!",
       status: false,
@@ -151,6 +159,7 @@ function checkUserAndGenerateToken(data, req, res) {
     (err, token) => {
       if (err) {
         console.log("[LOGIN_ERROR]: " + Object.keys(err));
+        logger.log("error", err.message);
         return res.status(400).json({
           status: false,
           errorMessage: err,

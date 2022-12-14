@@ -3,6 +3,8 @@ const express = require("express"),
   Course = require("../model/course.js"),
   User = require("../model/user.js");
 
+const logger = require("../utils/log");
+
 router.get("/", (req, res) => {
   const usr_id = req.user.user;
   let personalCourseData = [];
@@ -12,6 +14,7 @@ router.get("/", (req, res) => {
     .exec((err, post) => {
       if (err) {
         console.log("[DASHBOARD_FIND_USER]: " + Object.keys(err));
+        logger.log("error", err.message);
         res.status(400).json({
           errorMessage: "No User Found!",
           status: false,
@@ -43,6 +46,7 @@ router.post("/add", async (req, res) => {
     (err, data) => {
       if (err) {
         console.log("[DASHBOARD_ADD_COURSE]: " + Object.keys(err));
+        logger.log("error", err.message);
         res.status(400).json({
           errorMessage: err,
           status: false,
@@ -57,6 +61,7 @@ router.post("/add", async (req, res) => {
     (err, data) => {
       if (err) {
         console.log("[DASHBOARD] 2: " + Object.keys(err));
+        logger.log("error", err.message);
         res.status(400).json({
           errorMessage: err,
           status: false,
@@ -86,6 +91,7 @@ router.post("/delete", async (req, res) => {
     (err, data) => {
       if (err) {
         console.log("[DASHBOARD_DELETE_COURSE]: " + Object.keys(err));
+        logger.log("error", err.message);
         res.status(400).json({
           errorMessage: "Delete Failed.",
           status: false,

@@ -2,8 +2,9 @@ const express = require("express");
 const passport = require("passport");
 const app = express();
 const cors = require("cors");
-// const bodyParser = require("body-parser");
-// const path = require("path");
+const logger = require("./utils/log");
+const httpLogStream = require("./utils/log");
+const morgan = require("morgan");
 require("./auth");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -34,6 +35,7 @@ const runServer = async () => {
       })
     );
   } catch (err) {
+    logger.log("error", err.message);
     error({
       title: `Database connection failed❌. Check error: \n ${err}`,
       badge: true,
@@ -51,6 +53,10 @@ const sessionOptions = {
   resave: true,
   saveUninitialized: true,
 };
+
+// Log http requests
+app.use(morgan("combined", { stream: httpLogStream }));
+
 app.use(session(sessionOptions));
 
 app.use(express.urlencoded({ extended: false }));
