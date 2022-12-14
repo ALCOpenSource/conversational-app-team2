@@ -3,6 +3,8 @@ const express = require("express"),
   Course = require("../model/course.js"),
   User = require("../model/user.js");
 
+const logger = require("../utils/log");
+
 router.get("/", (req, res) => {
   const usr_id = req.user.user;
   let personalCourseData = [];
@@ -11,7 +13,8 @@ router.get("/", (req, res) => {
     .populate("courses")
     .exec((err, post) => {
       if (err) {
-        console.log("[DASHBOARD_FIND_USER]: " + Object.keys(err));
+        console.log("[DASHBOARD_FIND_USER]: " + err);
+        logger.logger.error(err);
         res.status(400).json({
           errorMessage: "No User Found!",
           status: false,
@@ -42,7 +45,8 @@ router.post("/add", async (req, res) => {
     { new: true, upsert: true },
     (err, data) => {
       if (err) {
-        console.log("[DASHBOARD_ADD_COURSE]: " + Object.keys(err));
+        console.log("[DASHBOARD_ADD_COURSE]: " + err);
+        logger.logger.error(err);
         res.status(400).json({
           errorMessage: err,
           status: false,
@@ -56,7 +60,8 @@ router.post("/add", async (req, res) => {
     { $addToSet: { courses: doc._id } },
     (err, data) => {
       if (err) {
-        console.log("[DASHBOARD] 2: " + Object.keys(err));
+        console.log("[DASHBOARD] 2: " + err);
+        logger.logger.error(err);
         res.status(400).json({
           errorMessage: err,
           status: false,
@@ -74,26 +79,27 @@ router.post("/add", async (req, res) => {
 
 router.post("/delete", async (req, res) => {
   const usr_id = req.user.user;
-  console.log(req.body.course.registrationNumber);
+  console.log("[REGISTRATION_NUMBER]: " + req.body.course.registrationNumber);
   const doc = await Course.findOne({
     registrationNumber: req.body.course.registrationNumber,
   });
-  console.log(doc._id);
+  console.log("[DOC]: " + doc._id);
   await User.update(
     { username: usr_id },
     { $pull: { courses: { _id: doc._id } } },
     { new: true, upsert: true },
     (err, data) => {
       if (err) {
-        console.log("[DASHBOARD_DELETE_COURSE]: " + Object.keys(err));
-        res.status(400).json({
+        console.log("[DASHBOARD_DELETE_COURSE]: " + err);
+        logger.logger.error(err);
+        return res.status(400).json({
           errorMessage: "Delete Failed.",
           status: false,
           title: "Delete Failed.",
         });
         // console.log(err);
       } else {
-        res.status(200).json({
+        return res.status(200).json({
           status: true,
           title: "Course Deleted Successfully",
         });

@@ -1,4 +1,5 @@
 const request = require("request");
+const logger = require("../utils/log");
 
 const crawlerGET = (Url, cb) => {
   request(
@@ -16,6 +17,9 @@ const crawlerGET = (Url, cb) => {
         cb(body);
       } else {
         console.log("Crawling Failed:" + "https://schedge.a1liu.com/" + Url);
+        console.log("\n");
+        console.log("[CRAWLER_ERROR]: " + error);
+        logger.logger.error(error);
       }
     }
   );
