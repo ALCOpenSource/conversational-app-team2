@@ -20,7 +20,7 @@ router.use("/", (req, res, next) => {
             req.user = decoded;
             next();
           } else {
-            logger.log("error", err.message);
+            // logger.log("error", err.message);
             return res.status(401).json({
               errorMessage: "User unauthorized!",
               status: false,
@@ -31,7 +31,7 @@ router.use("/", (req, res, next) => {
     }
   } catch (e) {
     console.log("[VERIFY_TOKEN]: " + Object.keys(e));
-    logger.log("error", e.message);
+    // logger.log("error", e.message);
     return res.status(400).json({
       errorMessage: "Something went wrong!",
       status: false,
@@ -43,7 +43,7 @@ router.use("/", (req, res, next) => {
 router.get("/", (req, res, err) => {
   if (err) {
     console.log("[HEALTH_CHECK_API] error: " + Object.keys(err));
-    logger.log("error", err.message);
+    // logger.log("error", err.message);
     return res.status(500).json({
       status: false,
       errorMessage: "Something went wrong!",
@@ -58,20 +58,21 @@ router.get("/", (req, res, err) => {
 /* register api */
 router.post("/register", (req, res) => {
   try {
-    if (req.body && req.body.username && req.body.password) {
+    if (req.body && req.body.username && req.body.email && req.body.password) {
       User.findOne({ username: req.body.username }, (err, data) => {
         console.log("[username]: " + req.body.username);
         if (!data) {
           let hashedPassword = bcrypt.hashSync(req.body.password, 12);
           let user = new User({
             username: req.body.username,
+            name: req.body.name,
+            email: req.body.email,
             password: hashedPassword,
           });
-          console.log("[user]: " + Object.values(user));
           user.save((err, data) => {
             if (err) {
               console.log("[REGISTER_USER_ERROR] 1: " + Object.values(err)[3]);
-              logger.log("error", err.message);
+              // logger.log("error", err.message);
               return res.status(400).json({
                 errorMessage: err,
                 status: false,
@@ -85,6 +86,7 @@ router.post("/register", (req, res) => {
           });
         } else {
           console.log("[REGISTER_USER_ERROR] 2: thrown here!");
+          console.log("[DATA]: " + data);
           return res.status(400).json({
             errorMessage: `Username ${req.body.username} already exist! Try another one.`,
             status: false,
@@ -100,7 +102,7 @@ router.post("/register", (req, res) => {
     }
   } catch (e) {
     console.log("[REGISTER_USER_ERROR] 3: " + Object.keys(e));
-    logger.log("error", e.message);
+    // logger.log("error", e.message);
     return res.status(400).json({
       errorMessage: "Something went wrong!",
       status: false,
@@ -111,14 +113,13 @@ router.post("/register", (req, res) => {
 /* login api */
 router.post("/login", (req, res) => {
   try {
-    // FIXME: buggy when supplied with wrong username/password
     if (req.body && req.body.username && req.body.password) {
-      User.find({ username: req.body.username }, (err, data) => {
+      User.findOne({ username: req.body.username }, (err, data) => {
         console.log("[username]: " + req.body.username);
         if (data) {
           console.log("[DATA]: " + data);
-          if (bcrypt.compareSync(req.body.password, data[0].password)) {
-            checkUserAndGenerateToken(data[0], req, res);
+          if (bcrypt.compareSync(req.body.password, data.password)) {
+            checkUserAndGenerateToken(data, req, res);
           } else {
             console.log("[username/password taken] 1");
             return res.status(400).json({
@@ -143,7 +144,7 @@ router.post("/login", (req, res) => {
     }
   } catch (e) {
     console.log("something went wrong. See error: " + Object.keys(e));
-    logger.log("error", e.message);
+    // logger.log("error", e.message);
     return res.status(400).json({
       errorMessage: "Something went wrong!",
       status: false,
@@ -159,7 +160,7 @@ function checkUserAndGenerateToken(data, req, res) {
     (err, token) => {
       if (err) {
         console.log("[LOGIN_ERROR]: " + Object.keys(err));
-        logger.log("error", err.message);
+        // logger.log("error", err.message);
         return res.status(400).json({
           status: false,
           errorMessage: err,
