@@ -151,7 +151,7 @@ export default class Shop extends Component {
   };
 
   changeToShop = () => {
-    this.props.history.push("/shop/school");
+    this.props.history.push("/enroll/school");
   };
   handleProductOpen = () => {
     this.setState({
@@ -364,6 +364,14 @@ export default class Shop extends Component {
                   <TableCell align="center">{row.type}</TableCell>
                   <TableCell align="center">{row.time}</TableCell>
                   <TableCell align="center">
+                    <Button
+                      className="button_style"
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                    >
+                      Start Course
+                    </Button>
                     <Button
                       className="button_style"
                       variant="outlined"
