@@ -14,7 +14,7 @@ const customFormat = winston.format.combine(
     }`;
   })
 );
-const logger = winston.createLogger({
+exports.logger = winston.createLogger({
   format: customFormat,
   transports: [
     new winston.transports.File({
@@ -27,8 +27,6 @@ const logger = winston.createLogger({
 
 // const __filename = fileURLToPath(meta.url);
 // __dirname = path.dirname(__filename);
-const httpLogStream = fs.createWriteStream(
+exports.httpLogStream = fs.createWriteStream(
   path.join(__dirname, "../", "logs", "http_logs.log")
 );
-
-module.exports = { logger, httpLogStream };
