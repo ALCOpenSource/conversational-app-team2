@@ -20,7 +20,7 @@ router.use("/", (req, res, next) => {
             req.user = decoded;
             next();
           } else {
-            // logger.log("error", err.message);
+            logger.logger.error(err);
             return res.status(401).json({
               errorMessage: "User unauthorized!",
               status: false,
@@ -30,8 +30,8 @@ router.use("/", (req, res, next) => {
       );
     }
   } catch (e) {
-    console.log("[VERIFY_TOKEN]: " + Object.keys(e));
-    // logger.log("error", e.message);
+    console.log("[VERIFY_TOKEN]: " + e);
+    logger.logger.error(e);
     return res.status(400).json({
       errorMessage: "Something went wrong!",
       status: false,
@@ -40,20 +40,21 @@ router.use("/", (req, res, next) => {
 });
 
 /* Health-check api */
-router.get("/", (req, res, err) => {
-  if (err) {
-    console.log("[HEALTH_CHECK_API] error: " + Object.keys(err));
-    // logger.log("error", err.message);
-    return res.status(500).json({
-      status: false,
-      errorMessage: "Something went wrong!",
-    });
-  }
-  return res.status(200).json({
-    status: true,
-    title: "You're right🎅, API is working fine!",
-  });
-});
+// TODO: fix this, needs token to access, that should not be the case
+// router.get("/health-check", (req, res, err) => {
+//   if (err) {
+//     console.log("[HEALTH_CHECK_API] error: " + err);
+//     logger.logger.error(err);
+//     return res.status(500).json({
+//       status: false,
+//       errorMessage: "Something went wrong!",
+//     });
+//   }
+//   return res.status(200).json({
+//     status: true,
+//     title: "You're right🎅, API is working fine!",
+//   });
+// });
 
 /* register api */
 router.post("/register", (req, res) => {
@@ -71,8 +72,8 @@ router.post("/register", (req, res) => {
           });
           user.save((err, data) => {
             if (err) {
-              console.log("[REGISTER_USER_ERROR] 1: " + Object.values(err)[3]);
-              // logger.log("error", err.message);
+              console.log("[REGISTER_USER_ERROR] 1: " + err);
+              logger.logger.error(err);
               return res.status(400).json({
                 errorMessage: err,
                 status: false,
@@ -101,8 +102,8 @@ router.post("/register", (req, res) => {
       });
     }
   } catch (e) {
-    console.log("[REGISTER_USER_ERROR] 3: " + Object.keys(e));
-    // logger.log("error", e.message);
+    console.log("[REGISTER_USER_ERROR] 3: " + e);
+    logger.logger.error(e);
     return res.status(400).json({
       errorMessage: "Something went wrong!",
       status: false,
@@ -137,14 +138,15 @@ router.post("/login", (req, res) => {
       });
     } else {
       console.log("add proper parameters");
+      logger.logger.error("Add proper parameter first!");
       return res.status(400).json({
         errorMessage: "Add proper parameter first!",
         status: false,
       });
     }
   } catch (e) {
-    console.log("something went wrong. See error: " + Object.keys(e));
-    // logger.log("error", e.message);
+    console.log("something went wrong. See error: " + e);
+    logger.logger.error(e);
     return res.status(400).json({
       errorMessage: "Something went wrong!",
       status: false,
@@ -159,8 +161,8 @@ function checkUserAndGenerateToken(data, req, res) {
     { expiresIn: "1d" },
     (err, token) => {
       if (err) {
-        console.log("[LOGIN_ERROR]: " + Object.keys(err));
-        // logger.log("error", err.message);
+        console.log("[LOGIN_ERROR]: " + err);
+        logger.logger.error(err);
         return res.status(400).json({
           status: false,
           errorMessage: err,

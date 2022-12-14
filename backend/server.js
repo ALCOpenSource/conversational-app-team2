@@ -3,7 +3,7 @@ const passport = require("passport");
 const app = express();
 const cors = require("cors");
 const logger = require("./utils/log");
-const httpLogStream = require("./utils/log");
+// const httpLogStream = require("./utils/log");
 const morgan = require("morgan");
 require("./auth");
 const dotenv = require("dotenv");
@@ -55,7 +55,7 @@ const sessionOptions = {
 };
 
 // Log http requests
-app.use(morgan("combined", { stream: httpLogStream }));
+app.use(morgan("combined", { stream: logger.httpLogStream }));
 
 app.use(session(sessionOptions));
 
