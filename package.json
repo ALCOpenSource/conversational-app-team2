@@ -1,0 +1,19 @@
+{
+  "name": "conversational-app-team2",
+  "version": "1.0.0",
+  "description": "![download](https://user-images.githubusercontent.com/1963879/200801383-6774d48f-25fa-40aa-84fd-f48b58650c78.png)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ALCOpenSource/conversational-app-team2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ALCOpenSource/conversational-app-team2/issues"
+  },
+  "homepage": "https://github.com/ALCOpenSource/conversational-app-team2#readme"
+}
