@@ -1,17 +1,16 @@
 import React from "react";
-import baseUrl from "../../config.js";
 import swal from "sweetalert";
-import "../../config";
+import baseUrl from "../../config.js";
 import { Button, TextField, Link } from "@material-ui/core";
-import axios from "axios";
+const axios = require("axios");
 
 export default class Register extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       name: "",
-      email: "",
       username: "",
+      email: "",
       password: "",
       confirm_password: "",
     };
@@ -20,32 +19,28 @@ export default class Register extends React.Component {
   onChange = (e) => this.setState({ [e.target.name]: e.target.value });
 
   register = () => {
-    // FIXME: Validate user payload for correctness & uniqueness before proceeeding
-
     axios
-      .post(baseUrl + "/user/register", {
+      .post(baseUrl + "register", {
         name: this.state.name,
-        email: this.state.email,
         username: this.state.username,
+        email: this.state.email,
         password: this.state.password,
       })
       .then((res) => {
-        // console.log("[REGISTER] res_payload keys: " + Object.keys(res)[0]);
-        // console.log("\n");
-        // console.log(
-        //   "[REGISTER] res_payload values: " + Object.keys(Object.values(res)[0])
-        // );
         swal({
-          text: res.data.mssg,
+          text: res.data.title,
           icon: "success",
+          type: "success",
         });
         this.props.history.push("/");
       })
       .catch((err) => {
-        // console.log("[REGISTER] err: " + Object.keys(err.response));
+        console.log("[REGISTER_ERROR]: " + err.response.data.errorMessage[2]);
         swal({
-          text: err.response.data.mssg,
+          // text: err.response.data.errorMessage,
+          text: err.message,
           icon: "error",
+          type: "error",
         });
       });
   };
@@ -65,7 +60,7 @@ export default class Register extends React.Component {
             name="name"
             value={this.state.name}
             onChange={this.onChange}
-            placeholder="Name"
+            placeholder="Enter Full Name"
             required
           />
           <br />
@@ -77,19 +72,19 @@ export default class Register extends React.Component {
             name="username"
             value={this.state.username}
             onChange={this.onChange}
-            placeholder="User Name"
+            placeholder="Enter username"
             required
           />
           <br />
           <br />
           <TextField
             id="email"
-            type="email"
+            type="text"
             autoComplete="off"
             name="email"
             value={this.state.email}
             onChange={this.onChange}
-            placeholder="Email"
+            placeholder="Your Email"
             required
           />
           <br />
@@ -101,7 +96,7 @@ export default class Register extends React.Component {
             name="password"
             value={this.state.password}
             onChange={this.onChange}
-            placeholder="Password"
+            placeholder="Enter Password"
             required
           />
           <br />
@@ -113,7 +108,7 @@ export default class Register extends React.Component {
             name="confirm_password"
             value={this.state.confirm_password}
             onChange={this.onChange}
-            placeholder="Confirm Password"
+            placeholder=" Enter Confirm Password"
             required
           />
           <br />
@@ -123,7 +118,11 @@ export default class Register extends React.Component {
             variant="contained"
             color="primary"
             size="small"
-            disabled={this.state.username === "" && this.state.password === ""}
+            disabled={
+              this.state.username === "" &&
+              this.state.email === "" &&
+              this.state.password === ""
+            }
             onClick={this.register}
           >
             Register

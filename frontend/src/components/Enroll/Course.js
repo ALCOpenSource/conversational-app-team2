@@ -32,7 +32,7 @@ function myMatch(origin, search) {
   }
   return false;
 }
-export default class Shop extends Component {
+export default class Enroll extends Component {
   constructor() {
     super();
     this.state = {
@@ -42,6 +42,9 @@ export default class Shop extends Component {
       openProductEditModal: false,
       id: "",
       name: "",
+      desc: "",
+      price: "",
+      discount: "",
       file: "",
       fileName: "",
       page: 1,
@@ -63,10 +66,11 @@ export default class Shop extends Component {
       });
     }
   };
-  handleCourseDelete = (course) => {
+
+  handleCourseAdd = (course) => {
     axios
       .post(
-        baseUrl + "dashboard/delete",
+        baseUrl + "dashboard/add",
         {
           usr_id: this.state.usr_id,
           course: course,
@@ -96,7 +100,13 @@ export default class Shop extends Component {
 
   getCourses = () => {
     this.setState({ loading: true });
-    const url = baseUrl + "dashboard";
+    const params = new URLSearchParams(this.props.location.search);
+    const url =
+      baseUrl +
+      "enroll/course?school=" +
+      params.get("school") +
+      "&subject=" +
+      params.get("subject");
     axios
       .get(url, {
         headers: {
@@ -109,7 +119,7 @@ export default class Shop extends Component {
         res.data.courses.map((course) => {
           if (
             myMatch(course.name.toLowerCase(), Search) ||
-            myMatch(String(course.ID).toLowerCase(), Search) ||
+            myMatch(course.ID.toLowerCase(), Search) ||
             Search === "" ||
             myMatch(String(course.registrationNumber), Search) ||
             myMatch(String(course.instructors).toLowerCase(), Search)
@@ -117,7 +127,6 @@ export default class Shop extends Component {
             data.push(course);
           }
         });
-
         this.setState({ loading: false, courses: data, pages: res.data.pages });
       })
       .catch((err) => {
@@ -126,7 +135,7 @@ export default class Shop extends Component {
           icon: "error",
           type: "error",
         });
-        this.setState({ loading: false, products: [], pages: 0 }, () => {});
+        this.setState({ loading: false, pages: 0 }, () => {});
       });
   };
 
@@ -150,34 +159,24 @@ export default class Shop extends Component {
     }
   };
 
-  changeToShop = () => {
-    this.props.history.push("/enroll/school");
+  changeToDashboard = () => {
+    this.props.history.push("/dashboard");
   };
-  handleProductOpen = () => {
-    this.setState({
-      openProductModal: true,
-      id: "",
-      name: "",
-      desc: "",
-      price: "",
-      discount: "",
-      fileName: "",
-    });
-  };
+
   render() {
     return (
       <div>
         {this.state.loading && <LinearProgress size={40} />}
         <div>
-          <h2>Dashboard</h2>
+          <h2>Enroll Course</h2>
           <Button
             className="button_style"
             variant="contained"
             color="primary"
             size="small"
-            onClick={this.changeToShop}
+            onClick={this.changeToDashboard}
           >
-            Enroll
+            Dashboard
           </Button>
           <Button
             className="button_style"
@@ -189,7 +188,6 @@ export default class Shop extends Component {
           </Button>
         </div>
 
-        {/* Edit Product */}
         <Dialog
           open={this.state.openProductEditModal}
           onClose={this.handleProductClose}
@@ -199,7 +197,7 @@ export default class Shop extends Component {
           <DialogTitle id="alert-dialog-title">Add to Dashboard</DialogTitle>
           <DialogContent>
             <TextField
-              id="school_code_dashboard"
+              id="school_code"
               type="text"
               autoComplete="off"
               name="name"
@@ -210,7 +208,7 @@ export default class Shop extends Component {
             />
             <br />
             <TextField
-              id="course_code_dashboard"
+              id="course_code"
               type="text"
               autoComplete="off"
               name="desc"
@@ -222,7 +220,7 @@ export default class Shop extends Component {
             <br />
             <form>
               <TextField
-                id="search_subject_dashboard"
+                id="search_subject"
                 type="text"
                 autoComplete="off"
                 name="search"
@@ -233,77 +231,15 @@ export default class Shop extends Component {
               />
             </form>
             <br />
-            <TextField
-              id="discount"
-              type="number"
-              autoComplete="off"
-              name="discount"
-              value={this.state.discount}
-              onChange={this.onChange}
-              placeholder="Discount"
-              required
-            />
-            <br />
-            <br />
           </DialogContent>
         </Dialog>
 
-        {/* Add Product */}
         <Dialog
           open={this.state.openProductModal}
           onClose={this.handleProductClose}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">Add Course</DialogTitle>
-          <DialogContent>
-            <TextField
-              id="product_name"
-              type="text"
-              autoComplete="off"
-              name="name"
-              value={this.state.name}
-              onChange={this.onChange}
-              placeholder="Product Name"
-              required
-            />
-            <br />
-            <TextField
-              id="product_desc"
-              type="text"
-              autoComplete="off"
-              name="desc"
-              value={this.state.desc}
-              onChange={this.onChange}
-              placeholder="Description"
-              required
-            />
-            <br />
-            <TextField
-              id="product_price"
-              type="number"
-              autoComplete="off"
-              name="price"
-              value={this.state.price}
-              onChange={this.onChange}
-              placeholder="Price"
-              required
-            />
-            <br />
-            <TextField
-              id="product_discount"
-              type="number"
-              autoComplete="off"
-              name="discount"
-              value={this.state.discount}
-              onChange={this.onChange}
-              placeholder="Discount"
-              required
-            />
-            <br />
-            <br />
-          </DialogContent>
-
           <DialogActions>
             <Button onClick={this.handleProductClose} color="primary">
               Cancel
@@ -329,13 +265,13 @@ export default class Shop extends Component {
 
         <TableContainer>
           <TextField
-            id="search_by_course_dashboard"
+            id="search_course"
             type="search"
             autoComplete="off"
             name="search"
             value={this.state.search}
             onChange={this.onChange}
-            placeholder="Search by course name"
+            placeholder="Search by course info"
             required
           />
           <Table aria-label="simple table">
@@ -369,17 +305,9 @@ export default class Shop extends Component {
                       variant="outlined"
                       color="primary"
                       size="small"
+                      onClick={() => this.handleCourseAdd(row)}
                     >
-                      Start Course
-                    </Button>
-                    <Button
-                      className="button_style"
-                      variant="outlined"
-                      color="secondary"
-                      size="small"
-                      onClick={() => this.handleCourseDelete(row)}
-                    >
-                      Delete
+                      Add
                     </Button>
                   </TableCell>
                 </TableRow>

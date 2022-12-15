@@ -1,121 +1,58 @@
-**School:**
+## iLearn App
 
-    ```
-    GET /shop/school
-    Headers: Bearer token
-    ```
+### Data Model
 
-    Model:
-    ```
-    token(string)
-    openProductModal(Boolean): default=false
-    openProductEditModal(Boolean): default:false
-    id(string)
-    name(string): School Name
-    code(string): "UC" or "US" or sth else
-    desc(string)
-    price(string)
-    discount(string)
-    file(string)
-    fileName(string)
-    page(number): default=1
-    search(string)
-    schools(list)
-    pages(number): default=0
-    loading(Boolean): default=false
-    ```
+- The application will store Users, and Courses
 
-**Subject:**
+- Users can have multiple Courses in their dashboard
 
-    ```
-    GET /shop/subjects?school=params
-    Params: school(School Name)
-    Headers: Bearer token
-    ```
+- Each course can have multiple information
 
-    Model:
-    ```
-    token(string)
-    openProductModal(Boolean): default=false
-    openProductEditModal(Boolean): default:false
-    id(string)
-    name(string): Subjects Name
-    code(string)
-    desc(string)
-    price(string)
-    discount(string)
-    file(string)
-    fileName(string)
-    page(number): default=1
-    search(string)
-    subjects(list)
-    pages(number): default=0
-    loading(Boolean): default=false
-    ```
+User:
 
-**Courses:**
+```javascript
+{
+  userSchema = new mongoose.Schema({
+    username: { type: String, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String },
+    courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "course" }],
+  });
+}
+```
 
-    ```
-    POST /dashboard/add
-    Headers: Bearer token
-    Content-Type: "application/json"
+Course:
 
-    GET /shop/course?school=params
-    Params: school(School Name)+&subject(Subject Name)
-    Headers: Bearer token
-    ```
-
-    Model:
-    ```
-    usr_id(string)
-    token(string)
-    openProductModal(Boolean): default=false
-    openProductEditModal(Boolean): default:false
-    id(string)
-    name(string): Subjects Name
-    code(string)
-    registrationNumber(string)
-    instructors(string or list)
-    unit(string)
-    location(string)
-    type(string)
-    time(string or datetime)
-    action(string): not sure if we need this
-    desc(string)
-    price(string)
-    discount(string)
-    file(string)
-    fileName(string)
-    page(number): default=1
-    search(string)
-    courses(list)
-    pages(number): default=0
-    loading(Boolean): default=false
-    ```
-
-**Dashboard:**
-
-    ```
-    GET /dashboard
-    Headers: Bearer token
-
-    DELETE /dashboard/delete
-    Headers: Bearer token
-    Content-Type: "application/json"
-    ```
-
-    Model:
-    ```
-    usr_id(string)
-    token(string)
-    openProductModal(Boolean): default=false
-    openProductEditModal(Boolean): default:false
-    id(string)
-    name(string)
-    file(string)
-    filename(string)
-    page(number): default=1
-    search(string)
-    courses(list)
-    pages(number): default=0
-    loading(Boolean): default=false
+```javascript
+{
+  courseSchema = new mongoose.Schema({
+    name: { type: String },
+    deptCourseId: { type: String },
+    description: { type: String },
+    subjectCode: {
+      code: { type: String },
+      school: { type: String },
+    },
+    registrationNumber: { type: Number },
+    code: { type: String },
+    instructors: [],
+    type: { type: String },
+    status: { type: String },
+    time: { type: String },
+    recitations: [],
+    waitlistTotal: { type: Number },
+    instructionMode: { type: String },
+    campus: { type: String },
+    minUnits: { type: Number },
+    maxUnits: { type: Number },
+    grading: { type: String },
+    location: { type: String },
+    notes: { type: String },
+    prerequisites: { type: String },
+    subject: { type: String },
+    school: { type: String },
+    ID: { type: String },
+  });
+}
+```

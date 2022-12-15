@@ -1,7 +1,4 @@
 "compilerOptions": {
-"baseUrl": "./",
-"paths": {
-  "crypto": [
-    "../../node_modules/crypto-js"
-  ]
+  "baseUrl": "./",
+  "paths": {"crypto": ["../../node_modules/crypto-js"]}
 }

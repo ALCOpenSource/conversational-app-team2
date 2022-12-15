@@ -2,7 +2,7 @@ import React from "react";
 import baseUrl from "../../config.js";
 import swal from "sweetalert";
 import { Button, TextField, Link } from "@material-ui/core";
-import axios from "axios";
+const axios = require("axios");
 
 export default class Login extends React.Component {
   constructor(props) {
@@ -16,26 +16,24 @@ export default class Login extends React.Component {
   onChange = (e) => this.setState({ [e.target.name]: e.target.value });
 
   login = () => {
-    //const pwd = bcrypt.hashSync(this.state.password, salt);
-
-    // FIXME: Validate user payload for correctness & uniqueness before proceeeding
-
     axios
-      .post(baseUrl + "/user/login", {
+      .post(baseUrl + "login", {
         username: this.state.username,
         password: this.state.password,
       })
       .then((res) => {
-        console.log("[LOGIN] res_payload: " + Object.keys(res));
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user_id", res.data.id);
-        this.props.history.push("/dashboard");
+        this.props.history.push("/enroll/school");
       })
       .catch((err) => {
-        // console.log("[LOGIN] err: " + err.response.data.mssg);
-        if (err.response && err.response.data && err.response.data.mssg) {
+        if (
+          err.response &&
+          err.response.data &&
+          err.response.data.errorMessage
+        ) {
           swal({
-            text: err.response.data.mssg,
+            text: err.response.data.errorMessage,
             icon: "error",
             type: "error",
           });
@@ -52,7 +50,7 @@ export default class Login extends React.Component {
 
         <div>
           <TextField
-            id="username"
+            id="standard-basic"
             type="text"
             autoComplete="off"
             name="username"
@@ -64,7 +62,7 @@ export default class Login extends React.Component {
           <br />
           <br />
           <TextField
-            id="password"
+            id="standard-basic"
             type="password"
             autoComplete="off"
             name="password"
